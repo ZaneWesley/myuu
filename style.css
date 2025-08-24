@@ -164,17 +164,24 @@ h2 {
 
 .pin-btn, .unpin-btn {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  background: var(--accent);
-  color: white;
+  top: 10px;
+  right: 10px;
+  background: transparent;
   border: none;
   border-radius: 50%;
   width: 22px;
   height: 22px;
-  font-size: 14px;
+  font-size: 20px;
   cursor: pointer;
   display: none;
+}
+
+.pin-btn i {
+  color: var(--accent);
+}
+
+.unpin-btn i {
+  color: #ff6161;
 }
 
 body.edit .card .pin-btn,

@@ -131,8 +131,8 @@ function createCard(link, isPinned) {
     <i class="${link.icon}"></i>
     <div>${link.name}</div>
     ${editMode ? (isPinned 
-        ? `<button class="unpin-btn">✕</button>` 
-        : `<button class="pin-btn">📌</button>`) 
+        ? '<button class="unpin-btn"><i class="fa-light fa-circle-xmark"></i>'
+        : '<button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>')
       : ""}
   `;
 
@@ -189,20 +189,6 @@ function unpinCard(name) {
   saveData(store);
 
   renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
-}
-
-function createCard(link) {
-  const card = document.createElement("div");
-  card.className = "card";
-  card.dataset.name = link.name;
-  card.innerHTML = `
-    <i class="${link.icon}"></i>
-    <div>${link.name}</div>
-  `;
-  card.onclick = e => {
-    if (!editMode) window.open(link.url, "_blank");
-  };
-  return card;
 }
 
 // Initialize Sortable
