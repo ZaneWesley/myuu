@@ -1,0 +1,302 @@
+/* =============================
+   GLOBALS
+   ============================= */
+:root {
+  --bg: #f5f7fa;
+  --text: #1b2430;
+  --text-dark: #0f1621;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --overlay-bg: rgba(255, 255, 255, 0.9);
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --accent: #990026;
+  --blur: 10px;
+}
+
+body.dark, html:has(body.dark) {
+  --bg: #1e2125;
+  --text: #e0e6eb;
+  --text-dark: #f5f7fa;
+  --card-bg: rgba(36, 40, 46, 0.8);
+  --overlay-bg: rgba(28, 32, 36, 0.9);
+  --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  --accent: #497791;
+  --blur: 10px;
+}
+
+html,
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0 auto;
+  background: var(--bg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: var(--text);
+  min-height: 100vh;
+  max-width: 1200px;
+}
+
+header {
+  padding: 1rem 2rem;
+  backdrop-filter: blur(var(--blur));
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+h1 {
+  color: var(--text-dark);
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.8rem;
+  color: var(--text-dark);
+}
+
+.search-container {
+  display: flex;
+  margin: 0 1rem;
+  padding: 0 1rem;
+  border-radius: 2rem;
+  backdrop-filter: blur(var(--blur));
+  background: var(--overlay-bg);
+  width: calc(100% - 2rem);
+  box-shadow: var(--box-shadow);
+}
+
+#search {
+  flex-grow: 1;
+  padding: 1rem 1.5rem;
+  border: none;
+  outline: none;
+  border-radius: 2rem;
+  background: transparent;
+  color: var(--text-dark);
+}
+
+.search-container button {
+  padding: 0.5rem;
+  background: transparent;
+  color: var(--text-dark);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* =============================
+   Tab Bar
+   ============================= */
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  background: var(--overlay-bg);
+  box-shadow: var(--box-shadow);
+  width: 90%;
+  max-width: 500px;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 0.7rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  background: transparent;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* =============================
+   Grid + Card
+   ============================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.card {
+  padding: 1rem;
+  border-radius: 1rem;
+  backdrop-filter: blur(var(--blur));
+  background: var(--card-bg);
+  box-shadow: var(--box-shadow);
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  user-select: none;
+  display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card:hover {
+  backdrop-filter: brightness(1.1);
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.card i {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  display: block;
+  color: var(--text-dark);
+}
+
+.pin-btn, .unpin-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+  cursor: pointer;
+  display: none;
+}
+
+body.edit .card .pin-btn,
+body.edit .card .unpin-btn {
+  display: block;
+}
+
+main {
+  padding: 1rem;
+  margin-bottom: 3rem;
+}
+
+#favorites-section {
+  border: 2px solid var(--accent);
+  border-radius: 1rem;
+  padding: 1rem;
+  margin: 1rem;
+  background: var(--overlay-bg);
+  box-shadow: var(--box-shadow);
+}
+
+#favorites-section h2 {
+  color: var(--accent);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+
+#favoritesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.8rem;
+}
+
+/* =============================
+   Dialog
+   ============================= */
+dialog::backdrop {
+  backdrop-filter: blur(var(--blur)) opacity(0.5) brightness(0.5);
+  background: var(--card-bg);
+}
+
+dialog {
+  background: var(--overlay-bg);
+  border-radius: 2rem;
+  box-shadow: var(--box-shadow), inset var(--box-shadow);
+  text-align: center;
+  border: none;
+  padding: 3rem;
+  min-width: 50%;
+  max-width: 85%;
+}
+
+dialog img:first-of-type {
+  width: 300px;
+  display: block;
+  margin: 2rem auto;
+}
+
+dialog label {
+  text-align: left;
+  display: block;
+  padding: 1rem 0;
+  color: var(--text-dark);
+}
+
+dialog input,
+dialog button {
+  border: 1px solid var(--text-dark);
+  background: var(--card-bg);
+  padding: 1rem 1.5rem;
+  border-radius: 2rem;
+  color: var(--text-dark);
+  outline: none;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+dialog .portrait,
+dialog .qr {
+  width: 150px;
+  height: 150px;
+}
+
+dialog p {
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+/* =============================
+   Edit Mode
+   ============================= */
+body.edit .card {
+  animation-name: jiggle;
+  animation-duration: 300ms;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  transform-origin: 50% 55%;
+  will-change: transform;
+  cursor: grab;
+}
+
+body.edit .dragging {
+  opacity: 0.4;
+  transform: scale(0.95);
+}
+
+body.edit .chosen {
+  opacity: 0.6;
+  border: 2px dashed var(--accent);
+}
+
+body.edit .sortable-ghost {
+  background: var(--accent);
+  opacity: 0.2;
+  border-radius: 0.75rem;
+  min-height: 60px;
+}
+
+
+@keyframes jiggle {
+  0% { transform: rotate(1deg); }
+  50% { transform: rotate(-1.5deg); }
+}

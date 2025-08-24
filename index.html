@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My.UU Hub</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.7.2/css/all.css" />
+</head>
+<body>
+  <header>
+    <h1>My.UU Hub</h1>
+    <div class="search-container">
+      <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <input id="search" type="text" placeholder="Search links...">
+      <button id="editToggle"><i class="fa-light fa-sliders-simple"></i></button>
+    </div>
+  </header>
+
+  <section id="favorites-section">
+    <h2>Pinned</h2>
+    <div id="favoritesGrid" class="grid"></div>
+  </section>
+
+  <main>
+    <h2>Browse</h2>
+    <div id="linksGrid" class="grid"></div>
+  </main>
+
+  <nav class="tabs">
+    <button class="tab active" data-category="All"><i class="fas fa-th-large"></i><br>All</button>
+    <button class="tab" data-category="Academics"><i class="fas fa-book"></i><br>Academics</button>
+    <button class="tab" data-category="Campus"><i class="fas fa-university"></i><br>Campus</button>
+    <button class="tab" data-category="Services"><i class="fas fa-concierge-bell"></i><br>Services</button>
+    <button class="tab" data-category="Help"><i class="fas fa-question-circle"></i><br>Help</button>
+  </nav>
+
+  <dialog id="id-card">
+    <h2>Student ID</h2>
+    <img src="https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color_RGB.png" alt="Union University Crest">
+    <img class="portrait" src="" alt="student ID image">
+    <img class="qr" src="" alt="student ID barcode">
+    <p>000000</p>
+    <button onclick="this.closest('dialog').close()">Done</button>
+  </dialog>
+
+  <dialog id="signin">
+    <h2>Sign In With</h2>
+    <img src="https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color_RGB.png" alt="Union University Crest">
+    <label for="idIpt">UU ID Number</label>
+    <input type="tel" id="idIpt">
+    <button id="signinBtn">OK</button>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
