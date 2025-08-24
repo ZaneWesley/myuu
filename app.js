@@ -218,7 +218,7 @@ function initSortable() {
     chosenClass: "chosen",
     dragClass: "dragging-real",
     swapThreshold: 0.65,
-    filter: 'body .card:not(body.edit .card), .idCard',
+    sort: editMode,
     onEnd: () => {
       saveOrder("favoritesGrid", "favoritesOrder");
       saveOrder("linksGrid", "linksOrder");
@@ -232,7 +232,7 @@ function initSortable() {
     chosenClass: "chosen",
     dragClass: "dragging-real",
     swapThreshold: 0.65,
-    filter: 'body .card:not(body.edit .card), .idCard',
+    sort: editMode,
     onEnd: () => {
       saveOrder("favoritesGrid", "favoritesOrder");
       saveOrder("linksGrid", "linksOrder");
