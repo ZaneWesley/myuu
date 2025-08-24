@@ -218,7 +218,7 @@ function initSortable() {
     chosenClass: "chosen",
     dragClass: "dragging-real",
     swapThreshold: 0.65,
-    sort: editMode,
+    disabled: !editMode,
     onEnd: () => {
       saveOrder("favoritesGrid", "favoritesOrder");
       saveOrder("linksGrid", "linksOrder");
@@ -232,7 +232,7 @@ function initSortable() {
     chosenClass: "chosen",
     dragClass: "dragging-real",
     swapThreshold: 0.65,
-    sort: editMode,
+    disabled: !editMode,
     onEnd: () => {
       saveOrder("favoritesGrid", "favoritesOrder");
       saveOrder("linksGrid", "linksOrder");
@@ -247,6 +247,8 @@ document.getElementById("editToggle").onclick = () => {
   document.querySelector('#editToggle i').className = editMode
     ? "fa-regular fa-circle-check"
     : "fa-light fa-sliders-simple";
+  if (favoritesGrid._sortable) favoritesGrid._sortable.option("disabled", !editMode);
+  if (linksGrid._sortable) linksGrid._sortable.option("disabled", !editMode);
   renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
 };
 
