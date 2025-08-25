@@ -23,7 +23,7 @@ const LINKS = [
   { name: "Meal Plan Balance", url: "https://idx.transactcampus.com/accounts/uu-edu/bulldogs/home", category: "Campus", icon: "fas fa-utensil-spoon", tags: "meal dining balance" },
   { name: "Microsoft Teams", url: "https://teams.microsoft.com/v2/", category: "Services", icon: "fab fa-microsoft", tags: "teams collaboration zoom" },
   { name: "Official Grades", url: "https://selfservice.uu.edu/Student/Student/Grades?preserveSession=true", category: "Academics", icon: "fas fa-graduation-cap", tags: "grades transcript" },
-  { name: "Self Service Portal", url: "https://selfservice.uu.edu/", category: "Academics", icon: "fas fa-laptop", tags: "portal selfservice" },
+  { name: "Self Service Portal", url: "https://selfservice.uu.edu/", category: "Academics", icon: "fas fa-laptop", tags: "portal selfservice student" },
   { name: "Safety & Security", url: "https://www.uu.edu/studentlife/safety-security/", category: "Services", icon: "fas fa-shield-alt", tags: "safety security" },
   { name: "Setup Email", url: "https://www.uu.edu/it/SuccessStart/?type=email#Email", category: "Help", icon: "fas fa-envelope", tags: "email setup outlook" },
   { name: "Success Start", url: "https://www.uu.edu/it/SuccessStart/", category: "Help", icon: "fas fa-rocket", tags: "new student help success start" },
@@ -174,6 +174,10 @@ function pinCard(name) {
   saveData(store);
 
   renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
+
+  // animate the new pinned card
+  const newCard = [...favoritesGrid.children].find(c => c.dataset.name === name);
+  if (newCard) newCard.classList.add("pin");
 }
 
 function unpinCard(name) {
@@ -181,7 +185,7 @@ function unpinCard(name) {
   let linkOrder = loadOrder("linksOrder");
 
   favOrder = favOrder.filter(n => n !== name);
-  if (!linkOrder.includes(name)) linkOrder.push(name);
+  if (!linkOrder.includes(name)) linkOrder.unshift(name);
 
   store = loadData();
   store.favoritesOrder = favOrder;
@@ -189,6 +193,10 @@ function unpinCard(name) {
   saveData(store);
 
   renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
+
+  // animate the re-added main grid card
+  const newCard = [...linksGrid.children].find(c => c.dataset.name === name);
+  if (newCard) newCard.classList.add("unpin");
 }
 
 // Initialize Sortable
@@ -208,6 +216,7 @@ function initSortable() {
     onEnd: () => {
       saveOrder("favoritesGrid", "favoritesOrder");
       saveOrder("linksGrid", "linksOrder");
+      renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
     }
   });
 
@@ -218,10 +227,12 @@ function initSortable() {
     chosenClass: "chosen",
     dragClass: "dragging-real",
     swapThreshold: 0.65,
+    filter: '.idCard',
     disabled: !editMode,
     onEnd: () => {
       saveOrder("favoritesGrid", "favoritesOrder");
       saveOrder("linksGrid", "linksOrder");
+      renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
     }
   });
 }
@@ -268,6 +279,13 @@ document.querySelector('#signin button').onclick = () => {
     saveData(store);
   }
   document.querySelector("#signin").close();
+};
+
+document.querySelector('#id-card #logout').onclick = () => {
+    store = loadData();
+    store.id = "";
+    saveData(store);
+  location.reload();
 };
 
 // Tabs

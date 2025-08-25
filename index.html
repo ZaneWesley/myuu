@@ -41,13 +41,14 @@
     <img class="portrait" src="" alt="student ID image">
     <img class="qr" src="" alt="student ID barcode">
     <p>000000</p>
-    <button onclick="this.closest('dialog').close()">Done</button>
+    <button id="logout" style="float:left;">Log Out</button>
+    <button onclick="this.closest('dialog').close()" style="float:right;">Done</button>
   </dialog>
 
   <dialog id="signin">
     <h2>Sign In With</h2>
     <img src="https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color_RGB.png" alt="Union University Crest">
-    <label for="idIpt">UU ID Number</label>
+    <label for="idIpt">Enter your Student ID Number</label>
     <input type="tel" id="idIpt">
     <button id="signinBtn">OK</button>
   </dialog>
