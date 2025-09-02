@@ -126,12 +126,12 @@ function createCard(link, isPinned) {
 
   if (!editMode) card.onclick = () => window.open(link.url, "_blank");
 
-  card.querySelector(".pin-btn")?.addEventListener("click", e => {
-    e.stopPropagation(); pinCard(link.name);
-  });
-  card.querySelector(".unpin-btn")?.addEventListener("click", e => {
-    e.stopPropagation(); unpinCard(link.name);
-  });
+  // card.querySelector(".pin-btn")?.addEventListener("click", e => {
+  //   e.stopPropagation(); pinCard(link.name);
+  // });
+  // card.querySelector(".unpin-btn")?.addEventListener("click", e => {
+  //   e.stopPropagation(); unpinCard(link.name);
+  // });
 
   return card;
 }
@@ -182,6 +182,14 @@ function initSortable() {
       saveOrder("favoritesGrid", "favoritesOrder");
       saveOrder("linksGrid", "linksOrder");
       renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
+    },
+    onFilter: (e) => {
+      var link = e.target.closest(".card").dataset;
+      if (e.target.classList.contains("pin-btn")) {
+        e.stopPropagation(); pinCard(link.name);
+      } else if (e.target.classList.contains("unpin-btn")) {
+        e.stopPropagation(); unpinCard(link.name);
+      }
     }
   };
 
