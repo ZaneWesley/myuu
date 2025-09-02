@@ -126,12 +126,12 @@ function createCard(link, isPinned) {
 
   if (!editMode) card.onclick = () => window.open(link.url, "_blank");
 
-  // card.querySelector(".pin-btn")?.addEventListener("click", e => {
-  //   e.stopPropagation(); pinCard(link.name);
-  // });
-  // card.querySelector(".unpin-btn")?.addEventListener("click", e => {
-  //   e.stopPropagation(); unpinCard(link.name);
-  // });
+  card.querySelector(".pin-btn")?.addEventListener("click", e => {
+    e.stopPropagation(); pinCard(link.name);
+  });
+  card.querySelector(".unpin-btn")?.addEventListener("click", e => {
+    e.stopPropagation(); unpinCard(link.name);
+  });
 
   return card;
 }
@@ -174,7 +174,7 @@ function initSortable() {
     group: "links",
     animation: 150,
     delay: 200,
-    delayOnTouchOnly: true,
+    //delayOnTouchOnly: true,
     touchStartThreshold: 5,
     ghostClass: "dragging",
     chosenClass: "chosen",
@@ -187,17 +187,17 @@ function initSortable() {
       renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
     },
     onFilter: (e) => {
-      var link = e.target.closest(".card").dataset;
-      if (e.target.classList.contains("pin-btn") && !e.dragged) {
-        e.stopPropagation(); pinCard(link.name);
-      } else if (e.target.classList.contains("unpin-btn")) {
-        e.stopPropagation(); unpinCard(link.name);
-      }
+      // var link = e.target.closest(".card").dataset;
+      // if (e.target.classList.contains("pin-btn")) {
+      //   e.stopPropagation(); pinCard(link.name);
+      // } else if (e.target.classList.contains("unpin-btn")) {
+      //   e.stopPropagation(); unpinCard(link.name);
+      // }
     }
   };
 
-  favoritesGrid._sortable = new Sortable(favoritesGrid, { ...baseOptions, filter: ".unpin-btn" });
-  linksGrid._sortable = new Sortable(linksGrid, { ...baseOptions, filter: ".idCard, .pin-btn" });
+  favoritesGrid._sortable = new Sortable(favoritesGrid, { ...baseOptions });
+  linksGrid._sortable = new Sortable(linksGrid, { ...baseOptions, filter: ".idCard" });
 }
 
 // Toggle edit mode
@@ -281,5 +281,4 @@ document.addEventListener("keydown", e => {
 });
 
 renderLinks();
-
 
