@@ -48,7 +48,6 @@ const tabs = document.querySelectorAll(".tab");
 function loadData() {
   return JSON.parse(localStorage.getItem("my.uu") || "{}");
 }
-
 function saveData(data) {
   localStorage.setItem("my.uu", JSON.stringify(data));
 }
@@ -57,15 +56,12 @@ let store = loadData();
 let UUID = store.id || null;
 let editMode = false;
 
-// Load link order
 function loadOrder(key) {
-  store = loadData();
-  return store[key] || [];
+  return loadData()[key] || [];
 }
 
-// Save order
 function saveOrder(gridId, key) {
-  const order = Array.from(document.getElementById(gridId).children)
+  const order = [...document.getElementById(gridId).children]
     .map(card => card.dataset.name)
     .filter(Boolean);
   store = loadData();
@@ -79,21 +75,18 @@ function renderLinks(category = "All", query = "") {
 
   const favOrder = loadOrder("favoritesOrder");
   const linkOrder = loadOrder("linksOrder");
+  const favSet = new Set(favOrder);
 
   // Favorites
-  let favLinks = LINKS.filter(l => favOrder.includes(l.name));
+  let favLinks = LINKS.filter(l => favSet.has(l.name));
   if (favOrder.length) {
     favLinks.sort((a, b) => favOrder.indexOf(a.name) - favOrder.indexOf(b.name));
   }
-
-  favLinks.forEach(link => {
-    const card = createCard(link, true);
-    favoritesGrid.appendChild(card);
-  });
+  favLinks.forEach(link => favoritesGrid.appendChild(createCard(link, true)));
 
   // Main links
   let filtered = LINKS.filter(link =>
-    (category === "All" ? true : link.category === category) &&
+    (category === "All" || link.category === category) &&
     (link.name.toLowerCase().includes(query) || link.tags.includes(query))
   );
 
@@ -102,21 +95,16 @@ function renderLinks(category = "All", query = "") {
   }
 
   filtered.forEach(link => {
-    if (favOrder.includes(link.name)) return; // skip pinned
-    const card = createCard(link, false);
-    linksGrid.appendChild(card);
+    if (!favSet.has(link.name)) linksGrid.appendChild(createCard(link, false));
   });
 
   // Student ID card
   if (category !== "Favorites") {
     const idCard = document.createElement("div");
     idCard.className = "card idCard";
-    idCard.innerHTML = `
-      <i class="fas fa-id-card"></i>
-      <div>Student ID</div>
-    `;
+    idCard.innerHTML = `<i class="fas fa-id-card"></i><div>Student ID</div>`;
     idCard.onclick = handleId;
-    linksGrid.insertBefore(idCard, linksGrid.firstChild);
+    linksGrid.prepend(idCard);
   }
 
   initSortable();
@@ -136,106 +124,69 @@ function createCard(link, isPinned) {
       : ""}
   `;
 
-  if (!editMode) {
-    card.onclick = () => window.open(link.url, "_blank");
-  }
+  if (!editMode) card.onclick = () => window.open(link.url, "_blank");
 
-  // Pin button
-  const pinBtn = card.querySelector(".pin-btn");
-  if (pinBtn) {
-    pinBtn.onclick = e => {
-      e.stopPropagation();
-      pinCard(link.name);
-    };
-  }
-
-  // Unpin button
-  const unpinBtn = card.querySelector(".unpin-btn");
-  if (unpinBtn) {
-    unpinBtn.onclick = e => {
-      e.stopPropagation();
-      unpinCard(link.name);
-    };
-  }
+  card.querySelector(".pin-btn")?.addEventListener("click", e => {
+    e.stopPropagation(); pinCard(link.name);
+  });
+  card.querySelector(".unpin-btn")?.addEventListener("click", e => {
+    e.stopPropagation(); unpinCard(link.name);
+  });
 
   return card;
 }
 
 function pinCard(name) {
   let favOrder = loadOrder("favoritesOrder");
-  let linkOrder = loadOrder("linksOrder");
+  let linkOrder = loadOrder("linksOrder").filter(n => n !== name);
 
   if (!favOrder.includes(name)) favOrder.push(name);
-  linkOrder = linkOrder.filter(n => n !== name);
 
   store = loadData();
-  store.favoritesOrder = favOrder;
-  store.linksOrder = linkOrder;
+  Object.assign(store, { favoritesOrder: favOrder, linksOrder: linkOrder });
   saveData(store);
 
-  renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
-
-  // animate the new pinned card
-  const newCard = [...favoritesGrid.children].find(c => c.dataset.name === name);
-  if (newCard) newCard.classList.add("pin");
+  rerenderWithAnimation(name, favoritesGrid, "pin");
 }
 
 function unpinCard(name) {
-  let favOrder = loadOrder("favoritesOrder");
+  let favOrder = loadOrder("favoritesOrder").filter(n => n !== name);
   let linkOrder = loadOrder("linksOrder");
-
-  favOrder = favOrder.filter(n => n !== name);
   if (!linkOrder.includes(name)) linkOrder.unshift(name);
 
   store = loadData();
-  store.favoritesOrder = favOrder;
-  store.linksOrder = linkOrder;
+  Object.assign(store, { favoritesOrder: favOrder, linksOrder: linkOrder });
   saveData(store);
 
-  renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
-
-  // animate the re-added main grid card
-  const newCard = [...linksGrid.children].find(c => c.dataset.name === name);
-  if (newCard) newCard.classList.add("unpin");
+  rerenderWithAnimation(name, linksGrid, "unpin");
 }
 
-// Initialize Sortable
+function rerenderWithAnimation(name, grid, animationClass) {
+  const activeCategory = document.querySelector(".tab.active").dataset.category;
+  renderLinks(activeCategory, searchInput.value.toLowerCase());
+  grid.querySelector(`[data-name="${name}"]`)?.classList.add(animationClass);
+}
+
 function initSortable() {
-  // Destroy old instances if any
-  if (linksGrid._sortable) linksGrid._sortable.destroy();
-  if (favoritesGrid._sortable) favoritesGrid._sortable.destroy();
+  [favoritesGrid, linksGrid].forEach(grid => grid._sortable?.destroy());
 
-  favoritesGrid._sortable = new Sortable(favoritesGrid, {
+  const baseOptions = {
     group: "links",
     animation: 150,
     ghostClass: "dragging",
     chosenClass: "chosen",
     dragClass: "dragging-real",
-    filter: ".unpin-btn",
-    swapThreshold: 0.65,
     disabled: !editMode,
+    swapThreshold: 0.65,
     onEnd: () => {
       saveOrder("favoritesGrid", "favoritesOrder");
       saveOrder("linksGrid", "linksOrder");
       renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
     }
-  });
+  };
 
-  linksGrid._sortable = new Sortable(linksGrid, {
-    group: "links",
-    animation: 150,
-    ghostClass: "dragging",
-    chosenClass: "chosen",
-    dragClass: "dragging-real",
-    swapThreshold: 0.65,
-    filter: '.idCard, .pin-btn',
-    disabled: !editMode,
-    onEnd: () => {
-      saveOrder("favoritesGrid", "favoritesOrder");
-      saveOrder("linksGrid", "linksOrder");
-      renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
-    }
-  });
+  favoritesGrid._sortable = new Sortable(favoritesGrid, { ...baseOptions, filter: ".unpin-btn" });
+  linksGrid._sortable = new Sortable(linksGrid, { ...baseOptions, filter: ".idCard, .pin-btn" });
 }
 
 // Toggle edit mode
@@ -245,17 +196,20 @@ document.getElementById("editToggle").onclick = () => {
   document.querySelector('#editToggle i').className = editMode
     ? "fa-regular fa-circle-check"
     : "fa-light fa-sliders-simple";
-  if (favoritesGrid._sortable) favoritesGrid._sortable.option("disabled", !editMode);
-  if (linksGrid._sortable) linksGrid._sortable.option("disabled", !editMode);
+  [favoritesGrid._sortable, linksGrid._sortable].forEach(s => s?.option("disabled", !editMode));
   renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
 };
 
 // Dark mode
 const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 function applyTheme(e) {
-  document.body.classList.toggle("dark", e.matches);
-  document.querySelector('#id-card img').src = document.body.classList.contains('dark') ? 'https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color.svg' : 'https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color_RGB.png';
-  document.querySelector('#signin img').src = document.body.classList.contains('dark') ? 'https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color.svg' : 'https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color_RGB.png';
+  const dark = e.matches;
+  document.body.classList.toggle("dark", dark);
+  ["#id-card img", "#signin img"].forEach(sel => {
+    document.querySelector(sel).src = dark
+      ? "https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color.svg"
+      : "https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color_RGB.png";
+  });
 }
 applyTheme(prefersDark);
 prefersDark.addEventListener("change", applyTheme);
@@ -265,7 +219,7 @@ function handleId() {
   if (UUID) {
     document.querySelector("#id-card .portrait").src = `https://www.uu.edu/bbidimages/photo.cfm?ID=${UUID}`;
     document.querySelector("#id-card .qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${UUID}`;
-    document.querySelector("#id-card p").innerText = `${UUID}`;
+    document.querySelector("#id-card p").innerText = UUID;
     document.querySelector("#id-card").showModal();
   } else {
     document.querySelector("#signin").showModal();
@@ -283,36 +237,35 @@ document.querySelector('#signin button').onclick = () => {
 };
 
 document.querySelector('#id-card #logout').onclick = () => {
-    store = loadData();
-    store.id = "";
-    saveData(store);
+  store = loadData();
+  store.id = "";
+  saveData(store);
   location.reload();
 };
 
 // Tabs
-tabs.forEach(tab => {
-  tab.onclick = () => {
-    document.querySelector(".tab.active").classList.remove("active");
-    tab.classList.add("active");
-    renderLinks(tab.dataset.category, searchInput.value.toLowerCase());
-  };
+tabs.forEach(tab => tab.onclick = () => {
+  document.querySelector(".tab.active").classList.remove("active");
+  tab.classList.add("active");
+  renderLinks(tab.dataset.category, searchInput.value.toLowerCase());
 });
 
-// Search
+// Search with debounce
+let searchTimeout;
 searchInput.addEventListener("input", () => {
-  const category = document.querySelector(".tab.active").dataset.category;
-  renderLinks(category, searchInput.value.toLowerCase());
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
+  }, 200);
 });
 
 // Keyboard shortcuts
 document.addEventListener("keydown", e => {
   if (e.key === "/") {
-    e.preventDefault();
-    searchInput.focus();
+    e.preventDefault(); searchInput.focus();
   } else if (e.key === "Escape") {
     searchInput.value = "";
-    const category = document.querySelector(".tab.active").dataset.category;
-    renderLinks(category, "");
+    renderLinks(document.querySelector(".tab.active").dataset.category, "");
   }
 });
 
