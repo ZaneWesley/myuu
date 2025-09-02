@@ -173,6 +173,9 @@ function initSortable() {
   const baseOptions = {
     group: "links",
     animation: 150,
+    delay: 200,
+    delayOnTouchOnly: true,
+    touchStartThreshold: 5,
     ghostClass: "dragging",
     chosenClass: "chosen",
     dragClass: "dragging-real",
@@ -278,3 +281,4 @@ document.addEventListener("keydown", e => {
 });
 
 renderLinks();
+
