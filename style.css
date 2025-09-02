@@ -148,6 +148,7 @@ h2 {
   position: relative;
   transition: all 0.2s;
   user-select: none;
+  -webkit-user-select: none;
   display: flex;
     flex-direction: column;
     justify-content: center;
@@ -162,13 +163,9 @@ h2 {
 
 .card:hover {
   backdrop-filter: brightness(1.1);
-  transform: scale(1.05);
+  scale: 1.05;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-}
-
-.card:active {
-    background: var(--accent);
-  filter: brightness(0.5) opacity(0.3);
+  text-decoration: underline;
 }
 
 .card i {
@@ -180,13 +177,12 @@ h2 {
 
 .pin-btn, .unpin-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0;
+  right: 0;
+  padding: 10px;
   background: transparent;
   border: none;
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
   font-size: 20px;
   cursor: pointer;
   display: none;
@@ -198,11 +194,15 @@ h2 {
   transform: scale(1.5);
 }
 
-.card.pin {
-  /*pin animation*/
+body.edit .card.pin {
+  animation:
+    slideToPin 500ms ease-out forwards,
+    jiggle 300ms ease-in-out infinite alternate!important;
 }
-.card.unpin {
-  /*unpin animation*/
+body.edit .card.unpin {
+  animation:
+    slideFromPin 500ms ease-out forwards,
+    jiggle 300ms ease-in-out infinite alternate!important;
 }
 
 .pin-btn i {
@@ -312,6 +312,10 @@ body.edit .card:not(.idCard) {
   cursor: grab;
 }
 
+body.edit .card:not(.idCard):hover {
+  text-decoration: none;
+}
+
 body.edit .dragging {
   opacity: 0.4;
   transform: scale(0.95);
@@ -320,13 +324,6 @@ body.edit .dragging {
 body.edit .chosen {
   opacity: 0.6;
   border: 2px dashed var(--accent);
-}
-
-body.edit .sortable-ghost {
-  background: var(--accent);
-  opacity: 0.2;
-  border-radius: 0.75rem;
-  min-height: 60px;
 }
 
 
@@ -344,4 +341,13 @@ body.edit .sortable-ghost {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+@keyframes slideToPin {
+  from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes slideFromPin {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }

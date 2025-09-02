@@ -211,6 +211,7 @@ function initSortable() {
     ghostClass: "dragging",
     chosenClass: "chosen",
     dragClass: "dragging-real",
+    filter: ".unpin-btn",
     swapThreshold: 0.65,
     disabled: !editMode,
     onEnd: () => {
@@ -227,7 +228,7 @@ function initSortable() {
     chosenClass: "chosen",
     dragClass: "dragging-real",
     swapThreshold: 0.65,
-    filter: '.idCard',
+    filter: '.idCard, .pin-btn',
     disabled: !editMode,
     onEnd: () => {
       saveOrder("favoritesGrid", "favoritesOrder");
