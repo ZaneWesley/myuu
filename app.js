@@ -188,7 +188,7 @@ function initSortable() {
     },
     onFilter: (e) => {
       var link = e.target.closest(".card").dataset;
-      if (e.target.classList.contains("pin-btn")) {
+      if (e.target.classList.contains("pin-btn") && !e.dragged) {
         e.stopPropagation(); pinCard(link.name);
       } else if (e.target.classList.contains("unpin-btn")) {
         e.stopPropagation(); unpinCard(link.name);
@@ -281,4 +281,5 @@ document.addEventListener("keydown", e => {
 });
 
 renderLinks();
+
 
