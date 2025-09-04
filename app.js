@@ -5,6 +5,7 @@ const LINKS = [
   { name: "Athletics", url: "https://uuathletics.com/", category: "Campus", icon: "fas fa-basketball-ball", tags: "sports games athletics" },
   { name: "Title IX", url: "https://www.uu.edu/studentlife/accountability/title-ix/", category: "Services", icon: "fas fa-balance-scale", tags: "safety accountability" },
   { name: "Campus Map", url: "https://www.uu.edu/jackson/map/", category: "Help", icon: "fas fa-map", tags: "map directions buildings" },
+  { name: "Camppus Rec App", url: "https://apps.apple.com/us/app/uu-campus-rec/id6749281547", category: "Campus", icon: "fas fa-running", tags: "fitness gym rec intermurals sports" },
   { name: "Canvas", url: "https://uu.instructure.com/", category: "Academics", icon: "fas fa-book", tags: "learning courses" },
   { name: "Chapel Balance", url: "https://selfservice.uu.edu/Student/Account/SsoLogin?preserveSession=true&returnUrl=%2FStudent%2FStudent%2FUnion%2FChapelInformation", category: "Campus", icon: "fas fa-church", tags: "chapel attendance" },
   { name: "Change UU Password", url: "https://password.uu.edu/", category: "Help", icon: "fas fa-key", tags: "password security login" },
@@ -119,8 +120,8 @@ function createCard(link, isPinned) {
     <i class="${link.icon}"></i>
     <div>${link.name}</div>
     ${editMode ? (isPinned 
-        ? '<button class="unpin-btn"><i class="fa-light fa-circle-xmark"></i>'
-        : '<button class="pin-btn"><i class="fa-solid fa-thumbtack"></i></button>')
+        ? '<button class="unpin-btn" aria-label="Unpin link"><i class="fa-light fa-circle-xmark"></i>'
+        : '<button class="pin-btn" aria-label="Pin link"><i class="fa-solid fa-thumbtack"></i></button>')
       : ""}
   `;
 
@@ -185,14 +186,6 @@ function initSortable() {
       saveOrder("favoritesGrid", "favoritesOrder");
       saveOrder("linksGrid", "linksOrder");
       renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
-    },
-    onFilter: (e) => {
-      // var link = e.target.closest(".card").dataset;
-      // if (e.target.classList.contains("pin-btn")) {
-      //   e.stopPropagation(); pinCard(link.name);
-      // } else if (e.target.classList.contains("unpin-btn")) {
-      //   e.stopPropagation(); unpinCard(link.name);
-      // }
     }
   };
 
@@ -210,20 +203,6 @@ document.getElementById("editToggle").onclick = () => {
   [favoritesGrid._sortable, linksGrid._sortable].forEach(s => s?.option("disabled", !editMode));
   renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
 };
-
-// Dark mode
-const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-function applyTheme(e) {
-  const dark = e.matches;
-  document.body.classList.toggle("dark", dark);
-  ["#id-card img", "#signin img"].forEach(sel => {
-    document.querySelector(sel).src = dark
-      ? "https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color.svg"
-      : "https://www.uu.edu/styleguide/universitylogos/logos/University_Crest_2015/_Horizontal_Center/UU_Crest_Center_Color_RGB.png";
-  });
-}
-applyTheme(prefersDark);
-prefersDark.addEventListener("change", applyTheme);
 
 // ID card
 function handleId() {
@@ -281,4 +260,3 @@ document.addEventListener("keydown", e => {
 });
 
 renderLinks();
-
