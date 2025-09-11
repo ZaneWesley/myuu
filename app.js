@@ -3,7 +3,7 @@ const LINKS = [
   { name: "Academic Calendar", url: "https://www.uu.edu/academics/calendars/", category: "Academics", icon: "fas fa-calendar", tags: "calendar schedule dates" },
   { name: "Alumni", url: "https://www.uu.edu/alumni/", category: "Campus", icon: "fas fa-user-friends", tags: "graduates alumni" },
   { name: "Athletics", url: "https://uuathletics.com/", category: "Campus", icon: "fas fa-basketball-ball", tags: "sports games athletics" },
-  { name: "Title IX", url: "https://www.uu.edu/studentlife/accountability/title-ix/", category: "Services", icon: "fas fa-balance-scale", tags: "safety accountability" },
+  { name: "Title IX", url: "https://www.uu.edu/studentlife/accountability/title-ix/", category: "Services", icon: "fas fa-balance-scale", tags: "safety accountability title 9" },
   { name: "Campus Map", url: "https://www.uu.edu/jackson/map/", category: "Help", icon: "fas fa-map", tags: "map directions buildings" },
   { name: "Camppus Rec App", url: "https://apps.apple.com/us/app/uu-campus-rec/id6749281547", category: "Campus", icon: "fas fa-running", tags: "fitness gym rec intermurals sports" },
   { name: "Canvas", url: "https://uu.instructure.com/", category: "Academics", icon: "fas fa-book", tags: "learning courses" },
@@ -27,6 +27,7 @@ const LINKS = [
   { name: "Self Service Portal", url: "https://selfservice.uu.edu/", category: "Academics", icon: "fas fa-laptop", tags: "portal selfservice student" },
   { name: "Safety & Security", url: "https://www.uu.edu/studentlife/safety-security/", category: "Services", icon: "fas fa-shield-alt", tags: "safety security" },
   { name: "Setup Email", url: "https://www.uu.edu/it/SuccessStart/?type=email#Email", category: "Help", icon: "fas fa-envelope", tags: "email setup outlook" },
+  { name: "Student Forms", url: "https://myuu.sharepoint.com/sites/StudentHomesite", category: "Services", icon: "fas fa-file", tags: "forms documents microsoft sharepoint" },
   { name: "Success Start", url: "https://www.uu.edu/it/SuccessStart/", category: "Help", icon: "fas fa-rocket", tags: "new student help success start" },
   { name: "Employee Directory", url: "https://www.uu.edu/employee/", category: "Campus", icon: "fas fa-address-book", tags: "directory staff" },
   { name: "Employee Timecard", url: "https://selfservice.uu.edu/Student/Account/SsoLogin?preserveSession=true&returnUrl=%2FStudent%2FTimeManagement%2FTimeSheet", category: "Campus", icon: "fas fa-clock", tags: "timecard work" },
@@ -56,6 +57,9 @@ function saveData(data) {
 let store = loadData();
 let UUID = store.id || null;
 let editMode = false;
+let theme = store.theme || "system";
+
+applyTheme(theme || "system");
 
 function loadOrder(key) {
   return loadData()[key] || [];
@@ -72,6 +76,7 @@ function saveOrder(gridId, key) {
 
 function renderLinks(category = "All", query = "") {
   linksGrid.innerHTML = "";
+  linksGrid.classList.add("grid");
   favoritesGrid.innerHTML = "";
 
   const favOrder = loadOrder("favoritesOrder");
@@ -100,16 +105,66 @@ function renderLinks(category = "All", query = "") {
   });
 
   // Student ID card
-  if (category !== "Favorites") {
-    const idCard = document.createElement("div");
-    idCard.className = "card idCard";
-    idCard.innerHTML = `<i class="fas fa-id-card"></i><div>Student ID</div>`;
-    idCard.onclick = handleId;
-    linksGrid.prepend(idCard);
-  }
+  // if (category !== "Favorites") {
+  //   const idCard = document.createElement("div");
+  //   idCard.className = "card idCard";
+  //   idCard.innerHTML = `<i class="fas fa-id-card"></i><div>Student ID</div>`;
+  //   idCard.onclick = handleId;
+  //   linksGrid.prepend(idCard);
+  // }
 
   initSortable();
 }
+
+function renderCategorizedLinks() {
+  linksGrid.innerHTML = "";
+  linksGrid.classList.remove("grid");
+  favoritesGrid.innerHTML = "";
+
+  const favOrder = loadOrder("favoritesOrder");
+  const favSet = new Set(favOrder);
+
+  // Group links by category
+  const categories = {};
+  LINKS.forEach(link => {
+    if (!categories[link.category]) categories[link.category] = [];
+    categories[link.category].push(link);
+  });
+
+  Object.keys(categories).forEach(category => {
+    // Category header
+    const header = document.createElement("h3");
+    header.textContent = category;
+    linksGrid.appendChild(header);
+
+    // Category grid
+    const categoryGrid = document.createElement("div");
+    categoryGrid.className = "grid";
+
+    categories[category].forEach(link => {
+      if (!favSet.has(link.name)) categoryGrid.appendChild(createCard(link, false));
+    });
+
+    linksGrid.appendChild(categoryGrid);
+  });
+
+  // Favorites
+  if (favOrder.length) {
+    let favLinks = LINKS.filter(l => favSet.has(l.name));
+    favLinks.sort((a, b) => favOrder.indexOf(a.name) - favOrder.indexOf(b.name));
+    favLinks.forEach(link => favoritesGrid.appendChild(createCard(link, true)));
+  }
+
+  // Student ID card (optional: include at top)
+  // const idCard = document.createElement("div");
+  // idCard.className = "card idCard";
+  // idCard.innerHTML = `<i class="fas fa-id-card"></i><div>Student ID</div>`;
+  // idCard.onclick = handleId;
+  // linksGrid.prepend(idCard);
+
+  initSortable();
+}
+
 
 function createCard(link, isPinned) {
   const card = document.createElement("div");
@@ -175,7 +230,7 @@ function initSortable() {
     group: "links",
     animation: 150,
     delay: 200,
-    //delayOnTouchOnly: true,
+    delayOnTouchOnly: true,
     touchStartThreshold: 5,
     ghostClass: "dragging",
     chosenClass: "chosen",
@@ -204,7 +259,11 @@ document.getElementById("editToggle").onclick = () => {
   renderLinks(document.querySelector(".tab.active").dataset.category, searchInput.value.toLowerCase());
 };
 
+// Settings
+document.getElementById("settings-btn").onclick = () => document.querySelector("#settings").showModal();
+
 // ID card
+document.querySelector('.idCard').onclick = handleId;
 function handleId() {
   if (UUID) {
     document.querySelector("#id-card .portrait").src = `https://www.uu.edu/bbidimages/photo.cfm?ID=${UUID}`;
@@ -226,7 +285,7 @@ document.querySelector('#signin button').onclick = () => {
   document.querySelector("#signin").close();
 };
 
-document.querySelector('#id-card #logout').onclick = () => {
+document.querySelector('#logout').onclick = () => {
   store = loadData();
   store.id = "";
   saveData(store);
@@ -234,10 +293,37 @@ document.querySelector('#id-card #logout').onclick = () => {
 };
 
 // Tabs
-tabs.forEach(tab => tab.onclick = () => {
+/*tabs.forEach(tab => tab.onclick = () => {
   document.querySelector(".tab.active").classList.remove("active");
   tab.classList.add("active");
   renderLinks(tab.dataset.category, searchInput.value.toLowerCase());
+});*/
+tabs.forEach(tab => tab.onclick = () => {
+  document.querySelector(".tab.active").classList.remove("active");
+  tab.classList.add("active");
+
+  const view = tab.dataset.view;
+
+  if (view === "search") {
+    searchInput.value = "";
+    var isActive = document.querySelector(".search-container").classList.toggle('active');
+    var searchIcon = document.querySelector(".tab.active i");
+    if (isActive) {
+      searchIcon.classList.remove('fa-magnifying-glass');
+      searchIcon.classList.add('fa-xmark');
+      searchInput.focus();
+    } else {
+      searchIcon.classList.remove('fa-xmark');
+      searchIcon.classList.add('fa-magnifying-glass');
+      searchInput.blur();
+      document.querySelector('.tab[data-view="grid"]').click();
+    }
+    //renderLinks("All"); // fallback to all links for search
+  } else if (view === "grid") {
+    renderLinks("All"); // show all links
+  } else if (view === "categorized") {
+    renderCategorizedLinks(); // render catoregorized view
+  }
 });
 
 // Search with debounce
@@ -259,4 +345,48 @@ document.addEventListener("keydown", e => {
   }
 });
 
+// Initial load
 renderLinks();
+
+// Tour
+document.addEventListener("DOMContentLoaded", () => {
+  if (!localStorage.getItem("my.uu-tour")) {
+    introJs().setOptions({
+      steps: [
+        { element: 'header h1', intro: 'Welcome to My.UU!'},
+        { element: '.tabs', intro: 'Use the bottom tabs to switch views or search.' },
+        {element: '#editToggle', intro: 'Use this button to rearrange your links.'},
+        {element: '.idCard', intro: 'Login and view your ID card.'},
+        { element: '#favorites-section', intro: 'Here are your pinned favorites!' }
+      ],
+      showProgress: false,
+      exitOnOverlayClick: false,
+      nextLabel: 'Next',
+      prevLabel: 'Back',
+      skipLabel: '\u2715',
+      doneLabel: 'Got it!'
+    }).oncomplete(() => localStorage.setItem("my.uu-tour", "true"))
+      .onexit(() => localStorage.setItem("my.uu-tour", "true"))
+      .start();
+  }
+});
+
+// Theme Handler
+function applyTheme(newtheme) {
+  if (newtheme === "system") {
+    document.documentElement.removeAttribute("data-theme");
+  } else {
+    document.documentElement.setAttribute("data-theme", newtheme);
+  }
+  
+  theme = newtheme;
+
+  // Save theme in store
+  store = loadData();
+  store.theme = newtheme;
+  saveData(store);
+}
+
+const themeSelect = document.getElementById("theme-select");
+themeSelect.value = theme;
+themeSelect.addEventListener("change", e => applyTheme(e.target.value));

@@ -9,6 +9,9 @@
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.7.2/css/all.css" />
+  <link rel="stylesheet" href="https://unpkg.com/intro.js/minified/introjs.min.css">
+  <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
+
 
   <!-- Analytics -->
 	<!-- Global site tag (gtag.js) - Google Analytics -->
@@ -24,10 +27,10 @@
 <body>
   <header>
     <h1>My.UU</h1>
-    <div class="search-container">
-      <button id="searchBtn" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
-      <input id="search" type="text" placeholder="Search links..." autocomplete="off">
-      <button id="editToggle" aria-label="Toggle edit mode"><i class="fa-light fa-sliders-simple"></i></button>
+    <div class="fb-container tg">
+      <button class="idCard fb" aria-label="ID card"><i class="fa-light fa-id-card"></i></button>
+      <button id="editToggle" class="fb" aria-label="Toggle edit mode"><i class="fa-light fa-sliders-simple"></i></button>
+      <button id="settings-btn" class="fb" aria-label="Settings"><i class="fa-light fa-gear"></i></button>
     </div>
   </header>
 
@@ -41,12 +44,25 @@
     <div id="linksGrid" class="grid"></div>
   </main>
 
-  <nav class="tabs">
+  <!-- <nav class="tabs">
     <button class="tab active" data-category="All"><i class="fas fa-th-large"></i><br>All</button>
     <button class="tab" data-category="Academics"><i class="fas fa-book"></i><br>Academics</button>
     <button class="tab" data-category="Campus"><i class="fas fa-university"></i><br>Campus</button>
     <button class="tab" data-category="Services"><i class="fas fa-concierge-bell"></i><br>Services</button>
     <button class="tab" data-category="Help"><i class="fas fa-question-circle"></i><br>Help</button>
+  </nav> -->
+
+  <nav class="tabs">
+    <div class="tg">
+      <button class="tab active" data-view="grid"><i class="fas fa-list"></i>All</button>
+      <button class="tab" data-view="categorized"><i class="fas fa-layer-group"></i>Categories</button>
+    </div>
+    <div class="tg">
+      <button class="tab" data-view="search" aria-label="Search button"><i class="fas fa-magnifying-glass"></i></button>
+    </div>
+    <div class="search-container">
+      <input id="search" type="text" placeholder="Search links..." autocomplete="off">
+    </div>
   </nav>
 
   <dialog id="id-card">
@@ -58,7 +74,6 @@
     <img class="portrait" src="" alt="student ID image">
     <img class="qr" src="" alt="student ID barcode">
     <p>000000</p>
-    <button id="logout" style="float:left;">Log Out</button>
     <button onclick="this.closest('dialog').close()" style="float:right;">Done</button>
   </dialog>
 
@@ -71,6 +86,26 @@
     <label for="idIpt">Enter your Student ID Number</label>
     <input type="tel" id="idIpt">
     <button id="signinBtn">OK</button>
+  </dialog>
+
+  <dialog id="settings">
+    <h2>Settings</h2>
+    <div class="settings-row">
+      <p>My.UU</p>
+      <a href="javascript:void(0)" id="logout">Sign Out</a>
+    </div>
+
+    <div class="settings-row">
+      <label for="theme-select">Theme</label>
+      <select id="theme-select">
+        <option value="system">Match Device</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+
+    </div>
+    
+    <button onclick="this.closest('dialog').close()" style="float:right;">Done</button>
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
